@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
     return <Login />;
   }
 
-  if (user.role !== 'admin') {
+  if (user.role !== 'ADMIN') {
     return <Login />;
   }
 

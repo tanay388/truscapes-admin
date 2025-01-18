@@ -16,23 +16,25 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  useTheme,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
   Store as StoreIcon,
   People as PeopleIcon,
-  ContentPaste as ContentIcon,
+  Category as CategoryIcon,
   Analytics as AnalyticsIcon,
   Settings as SettingsIcon,
   ChevronLeft as ChevronLeftIcon,
   AccountCircle as AccountCircleIcon,
-  Category as CategoryIcon,
-  Subscriptions as SubscriptionsIcon,
+  Image as ImageIcon,
+  Add as AddIcon,
+  ViewList as ListIcon,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "../../utils/contexts/AuthContext";
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -79,15 +81,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const menuItems = [
-  { text: "Products", icon: <StoreIcon />, path: "/products" },
-  { text: "Add Products", icon: <PeopleIcon />, path: "/products/add" },
-  { text: "Gallery", icon: <ContentIcon />, path: "/gallery" },
+  { text: "Products", icon: <ListIcon />, path: "/products" },
+  { text: "Add Product", icon: <AddIcon />, path: "/products/add" },
+  { text: "Gallery", icon: <ImageIcon />, path: "/gallery" },
   { text: "Categories", icon: <CategoryIcon />, path: "/categories" },
-  {
-    text: "Users",
-    icon: <PeopleIcon />,
-    path: "/users",
-  },
+  { text: "Users", icon: <PeopleIcon />, path: "/users" },
+  { text: "Vendors", icon: <StoreIcon />, path: "/vendors" },
   { text: "Analytics", icon: <AnalyticsIcon />, path: "/analytics" },
   { text: "Settings", icon: <SettingsIcon />, path: "/settings" },
 ];
@@ -97,7 +96,9 @@ const DashboardLayout = () => {
   const location = useLocation();
   const [open, setOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  const theme = useTheme();
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -127,50 +128,82 @@ const DashboardLayout = () => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <AppBarStyled position="fixed" open={open}>
+      <AppBarStyled 
+        position="fixed" 
+        open={open}
+        sx={{
+          bgcolor: 'background.paper',
+          boxShadow: 1,
+        }}
+      >
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={{ mr: 2, ...(open && { display: "none" }) }}
+            sx={{ 
+              mr: 2, 
+              ...(open && { display: "none" }),
+              color: 'text.primary'
+            }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          <Typography 
+            variant="h6" 
+            noWrap 
+            component="div" 
+            sx={{ 
+              flexGrow: 1,
+              color: 'text.primary',
+              fontWeight: 600
+            }}
+          >
             Admin Dashboard
           </Typography>
-          <div>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              {user?.name}
+            </Typography>
             <IconButton
               size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleMenu}
-              color="inherit"
+              sx={{ color: 'text.primary' }}
             >
-              <AccountCircleIcon />
+              <Avatar 
+                src={user?.photo}
+                sx={{ 
+                  width: 35, 
+                  height: 35,
+                  bgcolor: theme.palette.primary.main
+                }}
+              >
+                {user?.name?.charAt(0)}
+              </Avatar>
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-            >
-              <MenuItem onClick={handleProfile}>Profile</MenuItem>
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
-            </Menu>
-          </div>
+          </Box>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleProfile}>Profile</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBarStyled>
       <Drawer
@@ -180,6 +213,9 @@ const DashboardLayout = () => {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
+            bgcolor: 'background.paper',
+            borderRight: '1px solid',
+            borderColor: 'divider',
           },
         }}
         variant="persistent"
@@ -187,23 +223,59 @@ const DashboardLayout = () => {
         open={open}
       >
         <DrawerHeader>
-          <Typography variant="h6" sx={{ flexGrow: 1, ml: 2 }}>
-            Menu
-          </Typography>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            width: '100%', 
+            px: 2 
+          }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                flexGrow: 1,
+                fontWeight: 600,
+                color: theme.palette.primary.main
+              }}
+            >
+              TruScapes
+            </Typography>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </Box>
         </DrawerHeader>
         <Divider />
-        <List>
+        <List sx={{ px: 2 }}>
           {menuItems.map((item) => (
-            <ListItem key={item.text} disablePadding>
+            <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
                 selected={location.pathname === item.path}
                 onClick={() => navigate(item.path)}
+                sx={{
+                  borderRadius: 2,
+                  '&.Mui-selected': {
+                    bgcolor: `${theme.palette.primary.main}15`,
+                    '&:hover': {
+                      bgcolor: `${theme.palette.primary.main}25`,
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: theme.palette.primary.main,
+                    },
+                    '& .MuiListItemText-primary': {
+                      color: theme.palette.primary.main,
+                      fontWeight: 600,
+                    },
+                  },
+                }}
               >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+                <ListItemText 
+                  primary={item.text} 
+                  primaryTypographyProps={{
+                    fontSize: '0.9rem',
+                    fontWeight: location.pathname === item.path ? 600 : 500,
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
