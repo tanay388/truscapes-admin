@@ -1,27 +1,11 @@
 import React from "react";
 import Lottie from "react-lottie";
 import loadingData from "../../assets/lottie/loader.json";
+import { FiLoader } from "react-icons/fi";
 const AnimatedLoader = () => {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: loadingData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: "100vh",
-        // backgroundColor: "#fff",
-      }}
-    >
-      <Lottie options={defaultOptions} height={200} width={200} />
+    <div className="flex items-center justify-center h-screen">
+      <div className="loader animate-spin rounded-full h-16 w-16 border-t-4 border-yellow-500"></div>
     </div>
   );
 };

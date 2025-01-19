@@ -1,147 +1,142 @@
-import React from "react";
-import {
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Divider,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Chip,
-} from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { apiService } from "../../api/apiwrapper";
+import { FiLoader } from "react-icons/fi";
 
-const transactions = [
-  {
-    id: 1,
-    type: "DEPOSIT",
-    amount: 100.0,
-    description: "Monthly wallet deposit",
-    createdAt: "2025-01-12T10:30:00Z",
-  },
-  {
-    id: 2,
-    type: "WITHDRAWAL",
-    amount: 50.0,
-    description: "Purchase at Store A",
-    createdAt: "2025-01-11T08:15:00Z",
-  },
-  {
-    id: 3,
-    type: "CREDIT_ADDED",
-    amount: 20.0,
-    description: "Credit added to account",
-    createdAt: "2025-01-10T14:45:00Z",
-  },
-];
+const TransactionCard = ({ user }) => {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [hasMoreData, setHasMoreData] = useState(true);
 
-const TransactionCard = () => {
-  
+  const fetchTransactions = async (page = 1) => {
+    try {
+      setLoading(true);
+      const response = await apiService.get(
+        `/transactions/user/${user.id}?take=${pageSize}&skip=${
+          (page - 1) * pageSize
+        }`
+      );
+      if (response.data.length < pageSize) {
+        setHasMoreData(false);
+      } else {
+        setHasMoreData(true);
+      }
+      setTransactions(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch transactions.");
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions(currentPage);
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <Grid item xs={12}>
-      <Card
-        sx={{
-          height: "100%",
-          borderRadius: 3,
-          boxShadow: (theme) => theme.shadows[3],
-          bgcolor: "background.paper",
-        }}
-      >
-        {/* Top Gradient */}
-        <Box
-          sx={{
-            height: 4,
-            background: "linear-gradient(to right, #3f51b5, #2196f3)",
-          }}
-        />
-
-        <CardContent sx={{ p: 4 }}>
-          <Typography
-            variant="h6"
-            fontWeight={600}
-            sx={{ mb: 2, color: "primary.main" }}
-          >
+    <div className="w-full mt-6">
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden border">
+        <div className="h-2 bg-gradient-to-r from-yellow-500 to-yellow-300"></div>
+        <div className="p-6">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">
             Transactions
-          </Typography>
+          </h2>
 
-          <Divider sx={{ mb: 3 }} />
+          {loading ? (
+            <div className="flex justify-center py-6">
+              <FiLoader className="animate-spin text-yellow-500 text-3xl" />
+            </div>
+          ) : transactions.length === 0 ? (
+            <div className="text-center py-6 text-gray-600">
+              No transactions found.
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {transactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className="flex flex-col md:flex-row items-start md:items-center justify-between py-4"
+                >
+                  <div className="flex flex-col md:w-1/4">
+                    <span className="text-sm font-medium text-gray-500">
+                      Type
+                    </span>
+                    <span
+                      className={`text-base font-semibold ${
+                        transaction.type === "DEPOSIT"
+                          ? "text-green-500"
+                          : transaction.type === "WITHDRAWAL"
+                          ? "text-red-500"
+                          : "text-blue-500"
+                      }`}
+                    >
+                      {transaction.type.replace("_", " ")}
+                    </span>
+                  </div>
+                  <div className="flex flex-col md:w-1/4">
+                    <span className="text-sm font-medium text-gray-500">
+                      Amount
+                    </span>
+                    <span
+                      className={`text-base font-semibold ${
+                        transaction.type === "WITHDRAWAL"
+                          ? "text-red-500"
+                          : "text-gray-800"
+                      }`}
+                    >
+                      ${transaction.amount.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex flex-col md:w-1/3">
+                    <span className="text-sm font-medium text-gray-500">
+                      Description
+                    </span>
+                    <span className="text-base text-gray-700">
+                      {transaction.description || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col md:w-1/4">
+                    <span className="text-sm font-medium text-gray-500">
+                      Date
+                    </span>
+                    <span className="text-base text-gray-700">
+                      {new Date(transaction.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-          {/* Transactions List */}
-          <List>
-            {transactions.map((transaction) => (
-              <ListItem
-                key={transaction.id}
-                sx={{
-                  mb: 2,
-                  p: 2,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 2,
-                }}
+        {/* Pagination */}
+        {!loading && transactions.length > 0 && hasMoreData && (
+          <div className="mt-4 flex justify-center">
+            {currentPage > 1 && (
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                className="px-4 py-2 mx-1 border rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
-                <Box sx={{ width: "100%" }}>
-                  <Grid container spacing={2}>
-                    {/* Transaction Type */}
-                    <Grid item xs={12} md={3}>
-                      <Chip
-                        label={transaction.type.replace("_", " ")}
-                        color={
-                          transaction.type === "DEPOSIT"
-                            ? "success"
-                            : transaction.type === "WITHDRAWAL"
-                            ? "error"
-                            : "info"
-                        }
-                        sx={{ fontWeight: 500 }}
-                      />
-                    </Grid>
-
-                    {/* Amount */}
-                    <Grid item xs={12} md={3}>
-                      <Typography variant="body2" color="text.secondary">
-                        Amount
-                      </Typography>
-                      <Typography
-                        variant="h6"
-                        fontWeight={700}
-                        color={
-                          transaction.type === "WITHDRAWAL"
-                            ? "error.main"
-                            : "text.primary"
-                        }
-                      >
-                        ${transaction.amount.toFixed(2)}
-                      </Typography>
-                    </Grid>
-
-                    {/* Description */}
-                    <Grid item xs={12} md={4}>
-                      <Typography variant="body2" color="text.secondary">
-                        Description
-                      </Typography>
-                      <Typography variant="body1" color="text.primary">
-                        {transaction.description || "N/A"}
-                      </Typography>
-                    </Grid>
-
-                    {/* Created At */}
-                    <Grid item xs={12} md={2}>
-                      <Typography variant="body2" color="text.secondary">
-                        Date
-                      </Typography>
-                      <Typography variant="body1" color="text.primary">
-                        {new Date(transaction.createdAt).toLocaleDateString()}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </ListItem>
-            ))}
-          </List>
-        </CardContent>
-      </Card>
-    </Grid>
+                Previous
+              </button>
+            )}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="px-4 py-2 mx-1 border rounded bg-blue-500 text-white hover:bg-blue-600"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
