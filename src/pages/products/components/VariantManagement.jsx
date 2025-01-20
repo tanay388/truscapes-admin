@@ -15,9 +15,10 @@ import {
   CircularProgress,
   DialogActions,
 } from "@mui/material";
-import { Add, Delete, Edit } from "@mui/icons-material";
+import { Add, ChevronRight, Delete, Edit } from "@mui/icons-material";
 import GalleryPage from "../../gallery/GalleryPage";
 import { apiService } from "../../../api/apiwrapper";
+import { BiPencil, BiSave, BiTrash, BiUpload, BiX } from "react-icons/bi";
 
 const VariantManagement = ({ product }) => {
   const [variants, setVariants] = useState([]);
@@ -112,43 +113,103 @@ const VariantManagement = ({ product }) => {
         </Button>
       </Box>
 
-      <Grid container spacing={2}>
+      <div className="space-y-4">
         {variants.map((variant) => (
-          <Grid item xs={12} sm={6} md={4} key={variant.id}>
-            <Card>
-              <CardMedia
-                component="img"
-                height="200"
-                image={variant.images[0] || "/placeholder.png"}
-                alt={variant.name}
-              />
-              <CardContent>
-                <Typography variant="h6">{variant.name}</Typography>
-                <Typography>Price: ${variant.price}</Typography>
-                <Typography>Dealer Price: ${variant.dealerPrice}</Typography>
-                <Typography>
-                  Distributor Price: ${variant.distributorPrice}
-                </Typography>
-                <Typography>
-                  Contractor Price: ${variant.contractorPrice}
-                </Typography>
-              </CardContent>
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", p: 1 }}
-              >
-                <IconButton onClick={() => handleAddEditToggle(variant)}>
-                  <Edit color="primary" />
-                </IconButton>
-                <IconButton onClick={() => handleDelete(variant.id)}>
-                  <Delete color="error" />
-                </IconButton>
-              </Box>
-            </Card>
-          </Grid>
+          <div
+            key={variant.id}
+            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
+          >
+            <div className="flex flex-col sm:flex-row">
+              {/* Image Section */}
+              <div className="sm:w-48 h-48 flex-shrink-0">
+                <img
+                  src={variant.images[0] || "/placeholder.png"}
+                  alt={variant.name}
+                  className="w-full h-full object-cover object-center rounded-t-lg sm:rounded-l-lg sm:rounded-t-none"
+                />
+              </div>
+
+              {/* Content Section */}
+              <div className="flex-grow p-6">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {variant.name}
+                    </h3>
+
+                    {/* Price Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-gray-500">
+                          Regular Price
+                        </p>
+                        <p className="text-base font-semibold text-gray-900">
+                          ${variant.price}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-gray-500">
+                          Dealer Price
+                        </p>
+                        <p className="text-base font-semibold text-blue-600">
+                          ${variant.dealerPrice}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-gray-500">
+                          Distributor Price
+                        </p>
+                        <p className="text-base font-semibold text-green-600">
+                          ${variant.distributorPrice}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-gray-500">
+                          Contractor Price
+                        </p>
+                        <p className="text-base font-semibold text-purple-600">
+                          ${variant.contractorPrice}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions Section */}
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleAddEditToggle(variant)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors duration-200"
+                    >
+                      <BiPencil className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(variant.id)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors duration-200"
+                    >
+                      <BiTrash className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Additional Details Section
+                <div className="mt-4 flex items-center text-sm text-gray-500">
+                  <div className="flex space-x-4">
+                    {variant.sku && <span>SKU: {variant.sku}</span>}
+                    {variant.stock && <span>Stock: {variant.stock} units</span>}
+                  </div>
+                  <ChevronRight className="h-5 w-5 ml-auto text-gray-400" />
+                </div> */}
+              </div>
+            </div>
+          </div>
         ))}
-      </Grid>
+      </div>
 
       {/* Add/Edit Variant Popup */}
+
       <Dialog
         open={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}

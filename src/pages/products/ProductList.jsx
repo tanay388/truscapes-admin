@@ -60,7 +60,12 @@ const ProductRow = ({ product, index, moveProduct, updateCategoryIndex }) => {
       }}
     >
       <TableCell>{product.name}</TableCell>
-      <TableCell>{product.description}</TableCell>
+      <TableCell>
+        <div
+          className="mt-1 text-sm prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{ __html: product.description }}
+        />
+      </TableCell>
       <TableCell>{product.category.name}</TableCell>
       <TableCell>{product.state}</TableCell>
       <TableCell>${product.basePrice}</TableCell>

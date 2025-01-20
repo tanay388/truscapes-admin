@@ -18,7 +18,7 @@ const CategoryDetails = ({ category, isEditing, setEditedProduct }) => {
     }));
 
   return (
-    <Card>
+    <Card sx={{ mt: 2 }}>
       <CardContent>
         <Typography variant="h5" sx={{ mb: 2 }}>
           Category Details

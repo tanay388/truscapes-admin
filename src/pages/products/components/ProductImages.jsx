@@ -1,21 +1,39 @@
-import React from "react";
-import { Grid, Card, CardMedia } from "@mui/material";
+import React, { useState } from "react";
 
-const ProductImages = ({ images }) => (
-  <Grid container spacing={2} sx={{ mb: 3 }}>
-    {images.map((image, index) => (
-      <Grid item xs={12} sm={6} md={4} key={index}>
-        <Card>
-          <CardMedia
-            component="img"
-            height="320"
-            image={image}
-            alt={`Product Image ${index + 1}`}
-          />
-        </Card>
-      </Grid>
-    ))}
-  </Grid>
-);
+const ProductImages = ({ images }) => {
+  const [selectedImage, setSelectedImage] = useState(images[0]);
+
+  return (
+    <div className="flex flex-col items-center">
+      {/* Main Image */}
+      <div className="mb-4 w-full max-w-lg">
+        <img
+          src={selectedImage}
+          alt="Selected Product"
+          className="w-full h-auto rounded-lg border border-gray-200 shadow-md"
+        />
+      </div>
+
+      {/* Thumbnail Gallery */}
+      <div className="flex gap-2 justify-center">
+        {images.map((image, index) => (
+          <div
+            key={index}
+            onClick={() => setSelectedImage(image)}
+            className={`cursor-pointer border rounded-lg overflow-hidden ${
+              selectedImage === image ? "border-yellow-500" : "border-gray-200"
+            }`}
+          >
+            <img
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className="w-20 h-20 object-cover"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export default ProductImages;
