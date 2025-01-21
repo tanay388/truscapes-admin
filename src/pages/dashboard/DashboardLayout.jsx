@@ -33,6 +33,7 @@ import {
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { useAuth } from "../../utils/contexts/AuthContext";
+import { BsBox2 } from "react-icons/bs";
 
 const drawerWidth = 280;
 
@@ -86,9 +87,8 @@ const menuItems = [
   { text: "Gallery", icon: <ImageIcon />, path: "/gallery" },
   { text: "Categories", icon: <CategoryIcon />, path: "/categories" },
   { text: "Users", icon: <PeopleIcon />, path: "/users" },
-  { text: "Orders", icon: <StoreIcon />, path: "/orders" },
+  { text: "Orders", icon: <BsBox2 />, path: "/orders" },
   { text: "Analytics", icon: <AnalyticsIcon />, path: "/analytics" },
-  { text: "Settings", icon: <SettingsIcon />, path: "/settings" },
 ];
 
 const DashboardLayout = () => {

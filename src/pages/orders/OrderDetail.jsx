@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiService } from '../../api/apiwrapper';
-import { toast } from 'react-toastify';
-import AnimatedLoader from '../../components/loaders/AnimatedLoader';
-import { ArrowLeft } from 'react-icons/ai';
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiService } from "../../api/apiwrapper";
+import { toast } from "react-toastify";
+import AnimatedLoader from "../../components/loaders/AnimatedLoader";
+import { ArrowLeft } from "@mui/icons-material";
 
 const OrderStatus = {
-  PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
-  SHIPPED: 'SHIPPED',
-  DELIVERED: 'DELIVERED',
-  CANCELLED: 'CANCELLED',
+  PENDING: "PENDING",
+  PROCESSING: "PROCESSING",
+  SHIPPED: "SHIPPED",
+  DELIVERED: "DELIVERED",
+  CANCELLED: "CANCELLED",
 };
 
 const OrderDetail = () => {
@@ -19,26 +19,26 @@ const OrderDetail = () => {
   const queryClient = useQueryClient();
   const [updateDialog, setUpdateDialog] = useState(false);
   const [updateData, setUpdateData] = useState({
-    status: '',
-    trackingNumber: '',
-    notes: '',
+    status: "",
+    trackingNumber: "",
+    notes: "",
   });
 
   const { data: order, isLoading } = useQuery({
-    queryKey: ['order', id],
-    queryFn: () => apiService.get(`/orders/${id}`).then(res => res.data),
+    queryKey: ["order", id],
+    queryFn: () => apiService.get(`/orders/${id}`).then((res) => res.data),
   });
 
   const updateMutation = useMutation({
     mutationFn: (data) => apiService.patch(`/orders/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['order', id]);
-      toast.success('Order updated successfully');
+      queryClient.invalidateQueries(["order", id]);
+      toast.success("Order updated successfully");
       setUpdateDialog(false);
     },
     onError: (error) => {
-      toast.error('Failed to update order');
-      console.error('Update error:', error);
+      toast.error("Failed to update order");
+      console.error("Update error:", error);
     },
   });
 
@@ -63,25 +63,30 @@ const OrderDetail = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Link to="/orders" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4">
+          <Link
+            to="/orders"
+            className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4"
+          >
             <ArrowLeft className="mr-2" />
             Back to Orders
           </Link>
-          
+
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Order #{order.id}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Order #{order.id}
+              </h1>
               <p className="text-gray-500 mt-1">
                 Placed on {new Date(order.createdAt).toLocaleString()}
               </p>
             </div>
-            
+
             <button
               onClick={() => {
                 setUpdateData({
                   status: order.status,
-                  trackingNumber: order.trackingNumber || '',
-                  notes: order.notes || '',
+                  trackingNumber: order.trackingNumber || "",
+                  notes: order.notes || "",
                 });
                 setUpdateDialog(true);
               }}
@@ -90,13 +95,20 @@ const OrderDetail = () => {
               Update Order
             </button>
           </div>
-          
+
           <div className="mt-4">
-            <span className={`px-3 py-1 rounded-full text-sm font-semibold
-              ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' : 
-                order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                order.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-semibold
+              ${
+                order.status === "DELIVERED"
+                  ? "bg-green-100 text-green-800"
+                  : order.status === "PENDING"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : order.status === "CANCELLED"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-blue-100 text-blue-800"
+              }`}
+            >
               {order.status}
             </span>
           </div>
@@ -117,7 +129,7 @@ const OrderDetail = () => {
               </div>
               <div>
                 <label className="text-sm text-gray-500">Phone</label>
-                <p className="font-medium">{order.user?.phone || 'N/A'}</p>
+                <p className="font-medium">{order.user?.phone || "N/A"}</p>
               </div>
             </div>
           </div>
@@ -128,11 +140,13 @@ const OrderDetail = () => {
             <div className="space-y-3">
               <div>
                 <label className="text-sm text-gray-500">Tracking Number</label>
-                <p className="font-medium">{order.trackingNumber || 'Not available'}</p>
+                <p className="font-medium">
+                  {order.trackingNumber || "Not available"}
+                </p>
               </div>
               <div>
                 <label className="text-sm text-gray-500">Notes</label>
-                <p className="font-medium">{order.notes || 'No notes'}</p>
+                <p className="font-medium">{order.notes || "No notes"}</p>
               </div>
             </div>
           </div>
@@ -144,7 +158,10 @@ const OrderDetail = () => {
             <h2 className="text-xl font-semibold mb-6">Order Items</h2>
             <div className="divide-y divide-gray-200">
               {order.items?.map((item, index) => (
-                <div key={index} className="py-4 flex items-center justify-between">
+                <div
+                  key={index}
+                  className="py-4 flex items-center justify-between"
+                >
                   <div className="flex items-center space-x-4">
                     {item.product?.images?.[0] && (
                       <img
@@ -155,7 +172,9 @@ const OrderDetail = () => {
                     )}
                     <div>
                       <h3 className="font-medium">{item.product?.name}</h3>
-                      <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+                      <p className="text-sm text-gray-500">
+                        Quantity: {item.quantity}
+                      </p>
                       <p className="text-sm text-gray-500">
                         ${item.price} per unit
                       </p>
@@ -165,11 +184,11 @@ const OrderDetail = () => {
                 </div>
               ))}
             </div>
-            
+
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-semibold">Total Amount</span>
-                <span className="text-2xl font-bold">${order.totalAmount}</span>
+                <span className="text-2xl font-bold">${order.total}</span>
               </div>
             </div>
           </div>
@@ -180,7 +199,7 @@ const OrderDetail = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg max-w-md w-full p-6">
               <h2 className="text-xl font-semibold mb-4">Update Order</h2>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -209,7 +228,10 @@ const OrderDetail = () => {
                     type="text"
                     value={updateData.trackingNumber}
                     onChange={(e) =>
-                      setUpdateData({ ...updateData, trackingNumber: e.target.value })
+                      setUpdateData({
+                        ...updateData,
+                        trackingNumber: e.target.value,
+                      })
                     }
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                   />
@@ -242,7 +264,7 @@ const OrderDetail = () => {
                   disabled={updateMutation.isLoading}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
-                  {updateMutation.isLoading ? 'Updating...' : 'Update'}
+                  {updateMutation.isLoading ? "Updating..." : "Update"}
                 </button>
               </div>
             </div>
