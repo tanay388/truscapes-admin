@@ -86,7 +86,7 @@ const menuItems = [
   { text: "Gallery", icon: <ImageIcon />, path: "/gallery" },
   { text: "Categories", icon: <CategoryIcon />, path: "/categories" },
   { text: "Users", icon: <PeopleIcon />, path: "/users" },
-  { text: "Vendors", icon: <StoreIcon />, path: "/vendors" },
+  { text: "Orders", icon: <StoreIcon />, path: "/orders" },
   { text: "Analytics", icon: <AnalyticsIcon />, path: "/analytics" },
   { text: "Settings", icon: <SettingsIcon />, path: "/settings" },
 ];
@@ -128,11 +128,11 @@ const DashboardLayout = () => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <AppBarStyled 
-        position="fixed" 
+      <AppBarStyled
+        position="fixed"
         open={open}
         sx={{
-          bgcolor: 'background.paper',
+          bgcolor: "background.paper",
           boxShadow: 1,
         }}
       >
@@ -142,27 +142,27 @@ const DashboardLayout = () => {
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={{ 
-              mr: 2, 
+            sx={{
+              mr: 2,
               ...(open && { display: "none" }),
-              color: 'text.primary'
+              color: "text.primary",
             }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography 
-            variant="h6" 
-            noWrap 
-            component="div" 
-            sx={{ 
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{
               flexGrow: 1,
-              color: 'text.primary',
-              fontWeight: 600
+              color: "text.primary",
+              fontWeight: 600,
             }}
           >
             Admin Dashboard
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Typography variant="body2" color="text.secondary">
               {user?.name}
             </Typography>
@@ -172,14 +172,14 @@ const DashboardLayout = () => {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleMenu}
-              sx={{ color: 'text.primary' }}
+              sx={{ color: "text.primary" }}
             >
-              <Avatar 
+              <Avatar
                 src={user?.photo}
-                sx={{ 
-                  width: 35, 
+                sx={{
+                  width: 35,
                   height: 35,
-                  bgcolor: theme.palette.primary.main
+                  bgcolor: theme.palette.primary.main,
                 }}
               >
                 {user?.name?.charAt(0)}
@@ -213,9 +213,9 @@ const DashboardLayout = () => {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
-            bgcolor: 'background.paper',
-            borderRight: '1px solid',
-            borderColor: 'divider',
+            bgcolor: "background.paper",
+            borderRight: "1px solid",
+            borderColor: "divider",
           },
         }}
         variant="persistent"
@@ -223,18 +223,20 @@ const DashboardLayout = () => {
         open={open}
       >
         <DrawerHeader>
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            width: '100%', 
-            px: 2 
-          }}>
-            <Typography 
-              variant="h6" 
-              sx={{ 
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              px: 2,
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
                 flexGrow: 1,
                 fontWeight: 600,
-                color: theme.palette.primary.main
+                color: theme.palette.primary.main,
               }}
             >
               TruScapes
@@ -253,15 +255,15 @@ const DashboardLayout = () => {
                 onClick={() => navigate(item.path)}
                 sx={{
                   borderRadius: 2,
-                  '&.Mui-selected': {
+                  "&.Mui-selected": {
                     bgcolor: `${theme.palette.primary.main}15`,
-                    '&:hover': {
+                    "&:hover": {
                       bgcolor: `${theme.palette.primary.main}25`,
                     },
-                    '& .MuiListItemIcon-root': {
+                    "& .MuiListItemIcon-root": {
                       color: theme.palette.primary.main,
                     },
-                    '& .MuiListItemText-primary': {
+                    "& .MuiListItemText-primary": {
                       color: theme.palette.primary.main,
                       fontWeight: 600,
                     },
@@ -269,10 +271,10 @@ const DashboardLayout = () => {
                 }}
               >
                 <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-                <ListItemText 
-                  primary={item.text} 
+                <ListItemText
+                  primary={item.text}
                   primaryTypographyProps={{
-                    fontSize: '0.9rem',
+                    fontSize: "0.9rem",
                     fontWeight: location.pathname === item.path ? 600 : 500,
                   }}
                 />
