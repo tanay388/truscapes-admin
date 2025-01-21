@@ -1,24 +1,10 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Card,
-  Grid,
-  Chip,
-  Button,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  MenuItem,
-  CircularProgress,
-} from '@mui/material';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '../../api/apiwrapper';
 import { toast } from 'react-toastify';
 import AnimatedLoader from '../../components/loaders/AnimatedLoader';
+import { ArrowLeft } from 'react-icons/ai';
 
 const OrderStatus = {
   PENDING: 'PENDING',
@@ -60,198 +46,210 @@ const OrderDetail = () => {
     updateMutation.mutate(updateData);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case OrderStatus.PENDING:
-        return 'warning';
-      case OrderStatus.PROCESSING:
-        return 'info';
-      case OrderStatus.SHIPPED:
-        return 'primary';
-      case OrderStatus.DELIVERED:
-        return 'success';
-      case OrderStatus.CANCELLED:
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
   if (isLoading) {
     return <AnimatedLoader />;
   }
 
   if (!order) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h6">Order not found</Typography>
-      </Box>
+      <div className="p-6">
+        <h1 className="text-xl font-bold text-gray-700">Order not found</h1>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-        <div>
-          <Typography variant="h4" gutterBottom>
-            Order #{order.id}
-          </Typography>
-          <Chip
-            label={order.status}
-            color={getStatusColor(order.status)}
-            sx={{ mr: 1 }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            Placed on {new Date(order.createdAt).toLocaleString()}
-          </Typography>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <Link to="/orders" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4">
+            <ArrowLeft className="mr-2" />
+            Back to Orders
+          </Link>
+          
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Order #{order.id}</h1>
+              <p className="text-gray-500 mt-1">
+                Placed on {new Date(order.createdAt).toLocaleString()}
+              </p>
+            </div>
+            
+            <button
+              onClick={() => {
+                setUpdateData({
+                  status: order.status,
+                  trackingNumber: order.trackingNumber || '',
+                  notes: order.notes || '',
+                });
+                setUpdateDialog(true);
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Update Order
+            </button>
+          </div>
+          
+          <div className="mt-4">
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold
+              ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' : 
+                order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                order.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
+                'bg-blue-100 text-blue-800'}`}>
+              {order.status}
+            </span>
+          </div>
         </div>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setUpdateData({
-              status: order.status,
-              trackingNumber: order.trackingNumber || '',
-              notes: order.notes || '',
-            });
-            setUpdateDialog(true);
-          }}
-        >
-          Update Order
-        </Button>
-      </Box>
 
-      <Grid container spacing={3}>
-        {/* Customer Information */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Customer Information
-            </Typography>
-            <Typography>Name: {order.user?.name}</Typography>
-            <Typography>Email: {order.user?.email}</Typography>
-            <Typography>Phone: {order.user?.phone}</Typography>
-          </Card>
-        </Grid>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Customer Information */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm text-gray-500">Name</label>
+                <p className="font-medium">{order.user?.name}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Email</label>
+                <p className="font-medium">{order.user?.email}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Phone</label>
+                <p className="font-medium">{order.user?.phone || 'N/A'}</p>
+              </div>
+            </div>
+          </div>
 
-        {/* Shipping Information */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Shipping Information
-            </Typography>
-            <Typography>
-              Tracking Number: {order.trackingNumber || 'Not available'}
-            </Typography>
-            <Typography>Notes: {order.notes || 'No notes'}</Typography>
-          </Card>
-        </Grid>
+          {/* Shipping Information */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm text-gray-500">Tracking Number</label>
+                <p className="font-medium">{order.trackingNumber || 'Not available'}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Notes</label>
+                <p className="font-medium">{order.notes || 'No notes'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Order Items */}
-        <Grid item xs={12}>
-          <Card sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Order Items
-            </Typography>
-            <Box sx={{ mt: 2 }}>
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="p-6">
+            <h2 className="text-xl font-semibold mb-6">Order Items</h2>
+            <div className="divide-y divide-gray-200">
               {order.items?.map((item, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    py: 2,
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <div key={index} className="py-4 flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
                     {item.product?.images?.[0] && (
                       <img
                         src={item.product.images[0]}
                         alt={item.product.name}
-                        style={{ width: 50, height: 50, objectFit: 'cover' }}
+                        className="w-16 h-16 object-cover rounded-lg"
                       />
                     )}
                     <div>
-                      <Typography variant="subtitle1">
-                        {item.product?.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Quantity: {item.quantity}
-                      </Typography>
+                      <h3 className="font-medium">{item.product?.name}</h3>
+                      <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+                      <p className="text-sm text-gray-500">
+                        ${item.price} per unit
+                      </p>
                     </div>
-                  </Box>
-                  <Typography variant="subtitle1">
-                    ${item.price * item.quantity}
-                  </Typography>
-                </Box>
+                  </div>
+                  <p className="font-semibold">${item.price * item.quantity}</p>
+                </div>
               ))}
-            </Box>
-            <Box sx={{ mt: 3, textAlign: 'right' }}>
-              <Typography variant="h6">
-                Total Amount: ${order.totalAmount}
-              </Typography>
-            </Box>
-          </Card>
-        </Grid>
-      </Grid>
+            </div>
+            
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-semibold">Total Amount</span>
+                <span className="text-2xl font-bold">${order.totalAmount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {/* Update Dialog */}
-      <Dialog open={updateDialog} onClose={() => setUpdateDialog(false)}>
-        <DialogTitle>Update Order</DialogTitle>
-        <DialogContent sx={{ minWidth: 400 }}>
-          <TextField
-            select
-            fullWidth
-            label="Status"
-            value={updateData.status}
-            onChange={(e) =>
-              setUpdateData({ ...updateData, status: e.target.value })
-            }
-            margin="normal"
-          >
-            {Object.values(OrderStatus).map((status) => (
-              <MenuItem key={status} value={status}>
-                {status}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            fullWidth
-            label="Tracking Number"
-            value={updateData.trackingNumber}
-            onChange={(e) =>
-              setUpdateData({ ...updateData, trackingNumber: e.target.value })
-            }
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Notes"
-            value={updateData.notes}
-            onChange={(e) => setUpdateData({ ...updateData, notes: e.target.value })}
-            margin="normal"
-            multiline
-            rows={3}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setUpdateDialog(false)}>Cancel</Button>
-          <Button
-            onClick={handleUpdateSubmit}
-            variant="contained"
-            disabled={updateMutation.isLoading}
-          >
-            {updateMutation.isLoading ? (
-              <CircularProgress size={24} />
-            ) : (
-              'Update'
-            )}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+        {/* Update Dialog */}
+        {updateDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h2 className="text-xl font-semibold mb-4">Update Order</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={updateData.status}
+                    onChange={(e) =>
+                      setUpdateData({ ...updateData, status: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  >
+                    {Object.values(OrderStatus).map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tracking Number
+                  </label>
+                  <input
+                    type="text"
+                    value={updateData.trackingNumber}
+                    onChange={(e) =>
+                      setUpdateData({ ...updateData, trackingNumber: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Notes
+                  </label>
+                  <textarea
+                    value={updateData.notes}
+                    onChange={(e) =>
+                      setUpdateData({ ...updateData, notes: e.target.value })
+                    }
+                    rows={3}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  onClick={() => setUpdateDialog(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpdateSubmit}
+                  disabled={updateMutation.isLoading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {updateMutation.isLoading ? 'Updating...' : 'Update'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
