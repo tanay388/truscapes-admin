@@ -10,14 +10,12 @@ import AddProduct from "../pages/products/AddProduct";
 import ProductList from "../pages/products/ProductList";
 import ProductDetail from "../pages/products/ProductDetail";
 import Dashboard from "../pages/analytics/Dashboard";
+import OrderList from "../pages/orders/OrderList";
+import OrderDetail from "../pages/orders/OrderDetail";
+import UserOrders from "../pages/orders/UserOrders";
 
 export const routes = {
-  public: [
-    // {
-    //     path: "/login",
-    //     element: React.createElement(Login)
-    // },
-  ],
+  public: [],
   protected: [
     {
       element: React.createElement(ProtectedRoute, {
@@ -63,6 +61,18 @@ export const routes = {
         {
           path: "/profile",
           element: React.createElement(Profile),
+        },
+        {
+          path: "/orders",
+          element: React.createElement(OrderList),
+        },
+        {
+          path: "/orders/:id",
+          element: React.createElement(OrderDetail),
+        },
+        {
+          path: "/users/:userId/orders",
+          element: React.createElement(UserOrders),
         },
       ],
     },
